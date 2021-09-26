@@ -8,14 +8,18 @@ Created on Sat Nov  4 12:00:49 2017
 import pandas as pd
 import csv
 import numpy as np
+# nltk = Natural Language Tool Kit
 import nltk
 from nltk.stem import SnowballStemmer
 from nltk.stem.porter import PorterStemmer
+# tokenizer chia câu thành các từ
 from nltk.tokenize import word_tokenize
+# Seaborn is a Python data visualization library based on matplotlib.
+# It provides a high-level interface for drawing attractive and informative statistical graphics.
 import seaborn as sb
 
-#before reading the files, setup the working directory to point to project repo
-#reading data files 
+# before reading the files, setup the working directory to point to project repo
+# reading data files
 
 
 test_filename = 'test.csv'
@@ -27,83 +31,95 @@ test_news = pd.read_csv(test_filename)
 valid_news = pd.read_csv(valid_filename)
 
 
-
-#data observation
+# data observation
 def data_obs():
     print("training dataset size:")
     print(train_news.shape)
     print(train_news.head(10))
 
-    #below dataset were used for testing and validation purposes
+    # below dataset were used for testing and validation purposes
     print(test_news.shape)
     print(test_news.head(10))
-    
+
     print(valid_news.shape)
     print(valid_news.head(10))
 
-#check the data by calling below function
-#data_obs()
 
-#distribution of classes for prediction
+# check the data by calling below function
+# data_obs()
+
+# distribution of classes for prediction
+
+
 def create_distribution(dataFile):
-    
-    return sb.countplot(x='Label', data=dataFile, palette='hls')
-    
 
-#by calling below we can see that training, test and valid data seems to be failry evenly distributed between the classes
+    return sb.countplot(x='Label', data=dataFile, palette='hls')
+
+
+# by calling below we can see that training, test and valid data seems to be failry evenly distributed between the classes
 create_distribution(train_news)
 create_distribution(test_news)
 create_distribution(valid_news)
 
 
-#data integrity check (missing label values)
-#none of the datasets contains missing values therefore no cleaning required
+# data integrity check (missing label values)
+# Kiểm tra tính toàn vẹn của dữ liệu ( kiểm tra có nhãn nào bị thiếu giá trị không )
+# none of the datasets contains missing values therefore no cleaning required
+# Bộ dữ liệu không thiếu giá trị nào --> không cần phải làm loại bỏ dữ liệu bị thiếu
 def data_qualityCheck():
-    
+
     print("Checking data qualitites...")
     train_news.isnull().sum()
     train_news.info()
-        
+
     print("check finished.")
 
-    #below datasets were used to 
+    # below datasets were used to
     test_news.isnull().sum()
     test_news.info()
 
     valid_news.isnull().sum()
     valid_news.info()
 
-#run the below function call to see the quality check results
-#data_qualityCheck()
-
+# run the below function call to see the quality check results
+# data_qualityCheck()
 
 
 #eng_stemmer = SnowballStemmer('english')
 #stopwords = set(nltk.corpus.stopwords.words('english'))
 
-#Stemming
+# Stemming
+# stem là chuyển đổi từ thành dạng nguyên bản. VD: CONNECTION------> CONNECT,CONNECTED------> CONNECT
+# sử dụng SnowballStemmers để stem các từ không phải là tiếng anh
+# Tham khảo thêm: https://www.datacamp.com/community/tutorials/stemming-lemmatization-python
 def stem_tokens(tokens, stemmer):
     stemmed = []
     for token in tokens:
         stemmed.append(stemmer.stem(token))
     return stemmed
 
-#process the data
-def process_data(data,exclude_stopword=True,stem=True):
-    tokens = [w.lower() for w in data]
+# process the data
+
+
+def process_data(data, exclude_stopword=True, stem=True):
+    tokens = [w.lower() for w in data]  # lặp từng từ và chuyển sang chữ thường
     tokens_stemmed = tokens
     tokens_stemmed = stem_tokens(tokens, eng_stemmer)
-    tokens_stemmed = [w for w in tokens_stemmed if w not in stopwords ]
+    # trả về 1 mảng các từ đã được stem và không nằm trong danh sách stopword (các từ không thực sự quan trọng trong câu)
+    tokens_stemmed = [w for w in tokens_stemmed if w not in stopwords]
     return tokens_stemmed
 
 
-#creating ngrams
-#unigram 
+# Tham khảo: https://analyticsindiamag.com/complete-guide-on-language-modelling-unigram-using-python/
+# creating ngrams
+# unigram
 def create_unigram(words):
     assert type(words) == list
     return words
 
-#bigram
+# bigram
+
+
 def create_bigrams(words):
     assert type(words) == list
     skip = 0
@@ -112,13 +128,14 @@ def create_bigrams(words):
     if Len > 1:
         lst = []
         for i in range(Len-1):
-            for k in range(1,skip+2):
+            for k in range(1, skip+2):
                 if i+k < Len:
-                    lst.append(join_str.join([words[i],words[i+k]]))
+                    lst.append(join_str.join([words[i], words[i+k]]))
     else:
-        #set it as unigram
+        # set it as unigram
         lst = create_unigram(words)
     return lst
+
 
 """
 #trigrams
@@ -143,6 +160,7 @@ def create_trigrams(words):
 
 porter = PorterStemmer()
 
+
 def tokenizer(text):
     return text.split()
 
@@ -153,12 +171,13 @@ def tokenizer_porter(text):
 #doc = ['runners like running and thus they run','this is a test for tokens']
 #tokenizer([word for line in test_news.iloc[:,1] for word in line.lower().split()])
 
-#show the distribution of labels in the train and test data
+
+# show the distribution of labels in the train and test data
 """def create_datafile(filename)
     #function to slice the dataframe to keep variables necessary to be used for classification
     return "return df to be used"
 """
-    
+
 """#converting multiclass labels present in our datasets to binary class labels
 for i , row in data_TrainNews.iterrows():
     if (data_TrainNews.iloc[:,0] == "mostly-true" | data_TrainNews.iloc[:,0] == "half-true" | data_TrainNews.iloc[:,0] == "true"):
@@ -169,4 +188,3 @@ for i , row in data_TrainNews.iterrows():
 for i,row in data_TrainNews.iterrows():
     print(row)
 """
-    
